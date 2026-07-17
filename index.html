@@ -188,7 +188,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;paddin
 "use strict";
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const esc=t=>(t??"").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
-let D=null,store=null,LINKKEY=null,EP=null,SY="ok";
+let D=null,store=null,LINKKEY=null,AUTHTOK=null,EP=null,SY="ok";
 let S={screen:"home",di:0,openId:null,backTo:"list",fStatus:"all",q:"",pType:null,pInt:"3"};
 const DEC={onayla:{e:"✓",l:"Onaylandı"},duzeltilmeli:{e:"✏️",l:"Düzeltilmeli"},reddet:{e:"✕",l:"Reddedildi"},
   yanlis_kategori:{e:"🏷️",l:"Yanlış kategori"},birden_fazla_yapi:{e:"🔀",l:"Birden fazla yapı"},
@@ -204,6 +204,12 @@ const AY=["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","A
 
 /* boot */
 function b64u(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const b=atob(s),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+function bytesToB64u(buf){const a=new Uint8Array(buf);let bin="";for(let i=0;i<a.length;i++)bin+=String.fromCharCode(a[i]);return btoa(bin).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");}
+async function deriveAuth(){ // AES anahtarindan AYRI, veriyi cozemeyen sunucu-auth token'i
+  const hk=await crypto.subtle.importKey("raw",b64u(LINKKEY),{name:"HMAC",hash:"SHA-256"},false,["sign"]);
+  const sig=await crypto.subtle.sign("HMAC",hk,new TextEncoder().encode("psy-review-auth"));
+  return bytesToB64u(sig);}
+const EP_OK=/^https:\/\/[a-z0-9-]+\.(trycloudflare\.com|ts\.net)$/;
 async function boot(){
   const m=(location.hash||"").match(/k=([A-Za-z0-9_\-]+)/);
   if(!m){$("#gmsg").textContent="Sana gönderilen özel bağlantıyı (sonundaki #k=… dahil) kullan.";return;}
@@ -213,6 +219,7 @@ async function boot(){
     const key=await crypto.subtle.importKey("raw",b64u(LINKKEY),"AES-GCM",false,["decrypt"]);
     D=JSON.parse(new TextDecoder().decode(await crypto.subtle.decrypt({name:"AES-GCM",iv:buf.slice(0,12)},key,buf.slice(12))));
   }catch(e){$("#gmsg").textContent="Bağlantı doğrulanamadı. Linkin tamamını kopyaladığından emin ol.";return;}
+  try{AUTHTOK=await deriveAuth();}catch(e){}
   S.pType=D.types[0];
   try{store=JSON.parse(localStorage.getItem("psyrev_"+D.version))||null;}catch(e){}
   if(!store||!store.decisions)store={reviewer:"Ecem",decisions:{},pending:[]};
@@ -226,10 +233,12 @@ function save(){try{localStorage.setItem("psyrev_"+D.version,JSON.stringify(stor
 /* ---- merkezî senkron ---- */
 async function hydrate(){
   try{
-    const r=await fetch("endpoint.json?cache="+Date.now());EP=(await r.json()).url;
+    const r=await fetch("endpoint.json?cache="+Date.now());const u=(await r.json()).url;
+    EP=EP_OK.test(u)?u:null;                 // yalnız bilinen tünel origin'leri
   }catch(e){EP=null;setSync("off");return;}
+  if(!EP){setSync("off");return;}
   try{
-    const r=await fetch(EP+"/pull?auth="+encodeURIComponent(LINKKEY),{cache:"no-store"});
+    const r=await fetch(EP+"/pull",{cache:"no-store",headers:{Authorization:"Bearer "+AUTHTOK}});
     if(r.ok){const j=await r.json();
       for(const [k,v] of Object.entries(j.decisions||{})){
         if(!store.decisions[k]) store.decisions[k]={decision:v.decision,note:v.note||""};
@@ -247,8 +256,8 @@ async function flush(){
   const decisions=keys.map(k=>{const[ut,id]=k.split("|");const d=store.decisions[k];return d?{unit_type:ut,id,decision:d.decision,note:d.note||""}:null;}).filter(Boolean);
   setSync("busy");
   try{
-    const r=await fetch(EP+"/submit",{method:"POST",headers:{"content-type":"application/json"},
-      body:JSON.stringify({auth:LINKKEY,reviewer:store.reviewer||"Ecem",decisions})});
+    const r=await fetch(EP+"/submit",{method:"POST",headers:{"content-type":"application/json","Authorization":"Bearer "+AUTHTOK},
+      body:JSON.stringify({reviewer:store.reviewer||"Ecem",decisions})});
     if(r.ok){store.pending=store.pending.filter(k=>!keys.includes(k));save();setSync("ok");}
     else setSync("off");
   }catch(e){setSync("off");}
