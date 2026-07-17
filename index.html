@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>PsyPressure · İnceleme</title>
+<style>
+:root{
+  --bg:#F5F6F8; --panel:#FFFFFF; --panel2:#FBFCFD; --ink:#1A2230; --muted:#5B6472; --faint:#8A93A2;
+  --line:#E4E7EC; --line2:#EEF1F4;
+  --accent:#0F766E; --accent-ink:#0B5A54; --accent-weak:#E1F0EE;
+  --ok:#1F9D63; --ok-weak:#E4F5EC; --warn:#B8770F; --warn-weak:#FBF0DC; --bad:#C6413B; --bad-weak:#FBE7E5; --info:#5A6AA6; --info-weak:#E8EBF6;
+  --shadow:0 1px 2px rgba(20,30,50,.04),0 6px 20px rgba(20,30,50,.06);
+  --r:16px; --rs:11px;
+  --serif:ui-serif,"New York",Georgia,serif;
+  --sans:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E1420; --panel:#161E2C; --panel2:#1B2536; --ink:#E7ECF3; --muted:#96A3B6; --faint:#6D7B8F;
+  --line:#27313F; --line2:#202A38; --accent:#2FB6A8; --accent-ink:#5BD3C6; --accent-weak:#123330;
+  --ok:#43C286; --ok-weak:#12301F; --warn:#D79A3C; --warn-weak:#33260F; --bad:#E4726B; --bad-weak:#331A18; --info:#8E9BCB; --info-weak:#1D2338;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);}}
+:root[data-theme="light"]{
+  --bg:#F5F6F8; --panel:#FFFFFF; --panel2:#FBFCFD; --ink:#1A2230; --muted:#5B6472; --faint:#8A93A2;
+  --line:#E4E7EC; --line2:#EEF1F4; --accent:#0F766E; --accent-ink:#0B5A54; --accent-weak:#E1F0EE;
+  --ok:#1F9D63; --ok-weak:#E4F5EC; --warn:#B8770F; --warn-weak:#FBF0DC; --bad:#C6413B; --bad-weak:#FBE7E5; --info:#5A6AA6; --info-weak:#E8EBF6;
+  --shadow:0 1px 2px rgba(20,30,50,.04),0 6px 20px rgba(20,30,50,.06);}
+:root[data-theme="dark"]{
+  --bg:#0E1420; --panel:#161E2C; --panel2:#1B2536; --ink:#E7ECF3; --muted:#96A3B6; --faint:#6D7B8F;
+  --line:#27313F; --line2:#202A38; --accent:#2FB6A8; --accent-ink:#5BD3C6; --accent-weak:#123330;
+  --ok:#43C286; --ok-weak:#12301F; --warn:#D79A3C; --warn-weak:#33260F; --bad:#E4726B; --bad-weak:#331A18; --info:#8E9BCB; --info-weak:#1D2338;
+  --shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.35);}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.55 var(--sans);-webkit-text-size-adjust:100%;-webkit-font-smoothing:antialiased}
+body{padding-bottom:calc(230px + env(safe-area-inset-bottom))}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px}
+button{font:inherit;-webkit-tap-highlight-color:transparent}
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:saturate(150%) blur(12px);-webkit-backdrop-filter:saturate(150%) blur(12px);border-bottom:1px solid var(--line)}
+.hbar{max-width:680px;margin:0 auto;padding:11px 16px;display:flex;align-items:center;gap:10px}
+.brand{font-family:var(--serif);font-weight:600;font-size:18px;letter-spacing:-.01em;display:flex;align-items:center;gap:8px}
+.brand .dot{width:10px;height:10px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-weak)}
+.hspace{flex:1}
+.rev{display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted)}
+.rev input{font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:4px 8px;width:80px}
+.themebtn{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:9px;width:32px;height:32px;cursor:pointer;font-size:15px}
+.tabs{max-width:680px;margin:0 auto;padding:0 16px 10px;display:flex;gap:6px}
+.tabs button{flex:1;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:13.5px;font-weight:600;padding:8px 4px;border-radius:11px;cursor:pointer;transition:.15s}
+.tabs button[aria-selected="true"]{background:var(--accent-weak);color:var(--accent-ink);border-color:color-mix(in srgb,var(--accent) 35%,var(--line))}
+main{padding-top:14px}
+
+/* dashboard */
+.dash{display:flex;flex-direction:column;gap:14px;animation:rise .3s ease}
+.hero{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 20px}
+.hero h1{font-family:var(--serif);font-size:24px;margin:0 0 6px;letter-spacing:-.01em;text-wrap:balance}
+.hero p{margin:0;color:var(--muted);font-size:14.5px}
+.statrow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
+.stat .k{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin-bottom:8px}
+.stat .v{font-size:22px;font-weight:700;font-variant-numeric:tabular-nums}
+.stat .s{font-size:12px;color:var(--muted);margin-top:2px}
+.pbar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:10px}
+.pbar>i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent-ink));border-radius:99px;transition:width .35s ease}
+.cta{width:100%;border:0;background:var(--accent);color:#fff;font-weight:700;font-size:16px;padding:15px;border-radius:13px;cursor:pointer}
+.cta.ghost{background:var(--panel);color:var(--ink);border:1px solid var(--line);font-weight:600}
+.dashnote{color:var(--faint);font-size:12.5px;text-align:center;line-height:1.5}
+
+/* segmented sub-filter */
+.seg{display:flex;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px;margin-bottom:12px}
+.seg button{flex:1;border:0;background:transparent;color:var(--muted);font-size:13.5px;font-weight:550;padding:7px 6px;border-radius:9px;cursor:pointer}
+.seg button[aria-selected="true"]{background:var(--accent-weak);color:var(--accent-ink)}
+
+/* card */
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;animation:rise .3s ease}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.card,.dash{animation:none}.pbar>i{transition:none}}
+.chead{padding:15px 18px 0;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.chip{font-size:12px;font-weight:600;padding:4px 9px;border-radius:99px;white-space:nowrap}
+.chip.fam{background:var(--accent-weak);color:var(--accent-ink)}
+.chip.dom{background:var(--line2);color:var(--muted)}
+.chip.new{background:var(--warn-weak);color:var(--warn)}
+.chip.id{font-family:var(--mono);font-size:11px;background:transparent;color:var(--faint);padding:4px 0;margin-left:auto}
+.scenario{padding:14px 18px 4px}
+.slabel{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--faint);margin:0 0 6px}
+.stext{font-family:var(--serif);font-size:21px;line-height:1.4;letter-spacing:-.01em;text-wrap:pretty;margin:0}
+.en{color:var(--muted);font-size:14.5px;margin:9px 0 0}
+.hidden{display:none}
+.linkbtn{background:none;border:0;color:var(--accent-ink);font-size:13px;font-weight:600;cursor:pointer;padding:6px 0 0}
+.aids{margin:14px 18px 0;border-top:1px solid var(--line2);padding-top:13px;display:flex;flex-direction:column;gap:11px}
+.aid .k{font-size:11.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-bottom:2px}
+.aid.ok .k{color:var(--ok)}.aid.bad .k{color:var(--bad)}
+.aid .v{font-size:14.5px;line-height:1.5}
+.warnbox{margin:13px 18px 0;background:var(--warn-weak);border:1px dashed color-mix(in srgb,var(--warn) 45%,transparent);border-radius:var(--rs);padding:10px 13px;font-size:13.5px}
+.warnbox b{color:var(--warn)}
+details.ex{margin:13px 18px 0;border:1px solid var(--line);border-radius:var(--rs);background:var(--panel2)}
+details.ex summary{list-style:none;cursor:pointer;padding:11px 14px;font-size:13.5px;font-weight:600;color:var(--muted);display:flex;gap:8px;align-items:center}
+details.ex summary::-webkit-details-marker{display:none}
+details.ex summary .caret{transition:.2s;color:var(--faint)}
+details.ex[open] summary .caret{transform:rotate(90deg)}
+.exbody{padding:0 14px 13px;display:flex;flex-direction:column;gap:10px;font-size:14px;line-height:1.5}
+.compctl{display:flex;gap:8px;margin-bottom:4px}
+.compctl select{flex:1;font:inherit;font-size:13.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:9px;padding:7px 9px}
+.hint{margin:13px 18px 0;border-radius:var(--rs);padding:11px 13px;font-size:13.5px;line-height:1.45;display:flex;gap:9px;border:1px dashed}
+.hint.onay{background:var(--ok-weak);border-color:color-mix(in srgb,var(--ok) 40%,transparent)}
+.hint.sinir{background:var(--warn-weak);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}
+.hint .tag{font-size:10.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--faint);display:block;margin-top:5px}
+.prior{margin:13px 18px 16px;font-size:13.5px;padding:10px 13px;background:var(--info-weak);border-radius:var(--rs);border:1px solid color-mix(in srgb,var(--info) 30%,transparent)}
+.prior b{color:var(--info)}
+.card .pad-b{height:16px}
+
+/* list */
+.list{display:flex;flex-direction:column;gap:8px;animation:rise .3s ease}
+.search{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:10px 13px;margin-bottom:10px}
+.rowitem{display:flex;align-items:center;gap:11px;background:var(--panel);border:1px solid var(--line);border-radius:13px;padding:12px 14px;cursor:pointer;text-align:left;width:100%}
+.rowitem .st{flex:none;width:10px;height:10px;border-radius:50%}
+.st.none{background:var(--line)} .st.onayla{background:var(--ok)} .st.other{background:var(--warn)}
+.rowitem .tx{flex:1;min-width:0}
+.rowitem .t1{font-size:14.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rowitem .t2{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rowitem .idm{font-family:var(--mono);font-size:10.5px;color:var(--faint)}
+
+/* dock */
+.dock{position:fixed;left:0;right:0;bottom:0;z-index:40;background:color-mix(in srgb,var(--bg) 88%,transparent);
+  backdrop-filter:saturate(150%) blur(14px);-webkit-backdrop-filter:saturate(150%) blur(14px);
+  border-top:1px solid var(--line);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.dockin{max-width:680px;margin:0 auto;display:flex;flex-direction:column;gap:9px}
+.note{width:100%;font:inherit;font-size:14.5px;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:9px 12px;resize:none;min-height:42px;display:none}
+.note.show{display:block}
+.acts{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);font-weight:650;font-size:15px;padding:13px 8px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:transform .08s}
+.btn:active{transform:scale(.97)}
+.btn.ok[aria-pressed="true"]{background:var(--ok);color:#fff;border-color:var(--ok)}
+.btn.warn[aria-pressed="true"]{background:var(--warn);color:#fff;border-color:var(--warn)}
+.btn.bad[aria-pressed="true"]{background:var(--bad);color:#fff;border-color:var(--bad)}
+.morebar{display:flex;gap:8px;flex-wrap:wrap}
+.more{flex:1;min-width:100px;border:1px solid var(--line);background:var(--panel);color:var(--muted);font-size:12.5px;font-weight:600;padding:9px 6px;border-radius:10px;cursor:pointer}
+.more[aria-pressed="true"]{background:var(--info);color:#fff;border-color:var(--info)}
+.morewrap{display:none;flex-direction:column;gap:8px}.morewrap.show{display:flex}
+.nav{display:flex;align-items:center;gap:10px}
+.nav button{border:1px solid var(--line);background:var(--panel);color:var(--ink);font-size:14px;font-weight:600;padding:9px 14px;border-radius:10px;cursor:pointer}
+.nav button:disabled{opacity:.4}
+.nav .count{flex:1;text-align:center;font-size:13.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.dockfoot{text-align:center;font-size:13px}
+.dockfoot .linkbtn{padding:0}
+
+/* overlays */
+.ovl{position:fixed;inset:0;z-index:60;background:color-mix(in srgb,var(--bg) 70%,rgba(10,15,25,.5));backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:18px}
+.ovl.show{display:flex}
+.sheet{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);max-width:520px;width:100%;max-height:90vh;overflow:auto;padding:26px 24px}
+.sheet h2{font-family:var(--serif);font-size:23px;margin:0 0 4px;text-wrap:balance}
+.sheet .sub{color:var(--muted);font-size:14.5px;margin:0 0 18px}
+.steps{list-style:none;margin:0 0 20px;padding:0;display:flex;flex-direction:column;gap:12px}
+.steps li{display:flex;gap:12px}
+.steps .n{flex:none;width:26px;height:26px;border-radius:50%;background:var(--accent-weak);color:var(--accent-ink);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.steps .t{font-size:14.5px;line-height:1.5}
+.exportbox{margin-top:14px;background:var(--panel2);border:1px solid var(--line2);border-radius:12px;padding:12px;font-family:var(--mono);font-size:11px;color:var(--muted);max-height:140px;overflow:auto;white-space:pre-wrap;word-break:break-all}
+.block{margin-top:10px}
+.toast{position:fixed;left:50%;bottom:calc(240px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:70;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:99px;font-size:13.5px;font-weight:600;opacity:0;pointer-events:none;transition:.25s}
+.toast.show{opacity:1}
+.gate{max-width:420px;margin:18vh auto 0;text-align:center;padding:0 20px}
+.gate h1{font-family:var(--serif);font-size:26px}
+.gate p{color:var(--muted);font-size:15px;line-height:1.6}
+.footnote{max-width:680px;margin:16px auto 30px;padding:0 16px;color:var(--faint);font-size:12px;text-align:center;line-height:1.5}
+</style>
+</head>
+<body>
+
+<div id="app"><div class="gate"><h1>PsyPressure</h1><p id="gateMsg">Yükleniyor…</p></div></div>
+<div class="toast" id="toast"></div>
+
+<script>
+"use strict";
+const $=s=>document.querySelector(s);
+const esc=t=>(t??"").toString().replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+let D=null, store=null, S={tab:"panel", sub:"queue", idx:{base:0,lever:0,demand:0}, more:false, q:"", openId:null};
+
+/* ---------- crypto boot ---------- */
+function b64uToBytes(s){s=s.replace(/-/g,"+").replace(/_/g,"/");while(s.length%4)s+="=";const bin=atob(s);const a=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)a[i]=bin.charCodeAt(i);return a;}
+async function boot(){
+  const m=(location.hash||"").match(/k=([A-Za-z0-9_\-]+)/);
+  if(!m){$("#gateMsg").textContent="Bu sayfa özel bir bağlantıyla açılır. Sana gönderilen linki (sonundaki #k=… dahil) kullan.";return;}
+  try{
+    const keyBytes=b64uToBytes(m[1]);
+    const res=await fetch("data.enc",{cache:"no-store"});
+    if(!res.ok)throw new Error("veri indirilemedi");
+    const buf=new Uint8Array(await res.arrayBuffer());
+    const key=await crypto.subtle.importKey("raw",keyBytes,"AES-GCM",false,["decrypt"]);
+    const plain=await crypto.subtle.decrypt({name:"AES-GCM",iv:buf.slice(0,12)},key,buf.slice(12));
+    D=JSON.parse(new TextDecoder().decode(plain));
+  }catch(e){$("#gateMsg").textContent="Bağlantı anahtarı geçersiz görünüyor. Linkin tamamının (#k=… dahil) kopyalandığından emin ol.";return;}
+  store=load(); render();
+  if(!store.introSeen) showIntro();
+}
+function load(){try{const s=JSON.parse(localStorage.getItem("psyrev_"+D.version));if(s&&s.decisions)return s;}catch(e){}
+  return {reviewer:"Ecem",decisions:{},introSeen:false};}
+function save(){try{localStorage.setItem("psyrev_"+D.version,JSON.stringify(store));}catch(e){}}
+
+/* ---------- helpers ---------- */
+const UT={base:"Görev",lever:"Kaldıraç",demand:"Talep"};
+const PRIMARY=["onayla","duzeltilmeli","reddet"];
+const DEC_META={onayla:{e:"✅",l:"Onayla",c:"ok"},duzeltilmeli:{e:"✏️",l:"Düzeltilmeli",c:"warn"},reddet:{e:"❌",l:"Reddet",c:"bad"},
+  yanlis_kategori:{e:"🏷️",l:"Yanlış kategori"},birden_fazla_yapi:{e:"🔀",l:"Birden fazla yapı"},
+  dogal_olmayan_dil:{e:"🗣️",l:"Dil doğal değil"},kulturel_sorun:{e:"🌍",l:"Kültürel sorun"},
+  beklenen_davranis_yanlis:{e:"🎯",l:"Beklenen davranış yanlış"}};
+function eff(ut,id){ // etkin karar: yerel > onceki
+  const loc=store.decisions[ut+"|"+id]; if(loc)return {...loc,src:"local"};
+  const u=unit(ut,id); if(u&&u.prior)return {decision:u.prior.decision,note:u.prior.note,src:"prior",at:u.prior.at,reviewer:u.prior.reviewer};
+  return null;}
+function unit(ut,id){const arr=ut==="base"?D.bases:ut==="lever"?D.levers:D.demands;return arr.find(x=>x.id===id);}
+function listOf(ut){return ut==="base"?D.bases:ut==="lever"?D.levers:D.demands;}
+function decide(ut,id,dec){
+  const k=ut+"|"+id; const prev=store.decisions[k]||{};
+  store.decisions[k]={decision:dec,note:prev.note||""}; save();
+  if(dec==="duzeltilmeli"){render();const n=$("#note");if(n){n.classList.add("show");n.focus();}return;}
+  toast((DEC_META[dec]?.e||"")+" "+(DEC_META[dec]?.l||dec)+" kaydedildi");
+  const lst=curList();
+  if(S.tab==="base"&&S.openId){const i=lst.findIndex(x=>x.id===S.openId);
+    if(i>=0&&i<lst.length-1){S.openId=lst[i+1].id;setTimeout(render,240);}else render();return;}
+  if(S.idx[S.tab]<lst.length-1){S.idx[S.tab]++; setTimeout(render,240);} else render();
+}
+function clearDecision(ut,id){delete store.decisions[ut+"|"+id];save();toast("Karar temizlendi");render();}
+let toastT;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove("show"),1400);}
+
+/* ---------- progress ---------- */
+function prog(ut){const lst=listOf(ut);let rev=0,ap=0;for(const u of lst){const e=eff(ut,u.id);if(e){rev++;if(e.decision==="onayla")ap++;}}return{total:lst.length,rev,ap};}
+function newProg(){const ns=D.bases.filter(b=>b.isNew);const done=ns.filter(b=>store.decisions["base|"+b.id]).length;return{total:ns.length,done};}
+
+/* ---------- views ---------- */
+function curList(){
+  const ut=S.tab;let lst=listOf(ut);
+  if(ut==="base"){
+    if(S.sub==="queue")lst=lst.filter(x=>x.isNew);
+    else if(S.sub==="done")lst=lst.filter(x=>eff("base",x.id));
+    if(S.q){const q=S.q.toLowerCase();lst=lst.filter(x=>(x.id+" "+x.neutral_tr+" "+(x.familyLabel||"")).toLowerCase().includes(q));}
+  }
+  return lst;}
+
+function render(){
+  const app=$("#app");
+  const np=newProg();
+  const head=`
+  <header><div class="hbar">
+    <div class="brand"><span class="dot"></span>PsyPressure</div><div class="hspace"></div>
+    <label class="rev">İnceleyen <input id="rev" value="${esc(store.reviewer)}"></label>
+    <button class="themebtn" id="theme" aria-label="Tema">◐</button>
+  </div>
+  <div class="tabs" role="tablist">
+    ${["panel","base","lever","demand"].map(t=>`<button role="tab" data-tab="${t}" aria-selected="${S.tab===t}">${t==="panel"?"Panel":UT[t]+(t==="base"?"ler":t==="lever"?"lar":"ler")}</button>`).join("")}
+  </div></header>`;
+  let body="";
+  if(S.tab==="panel")body=dash();
+  else if(S.tab==="base")body=baseView();
+  else body=simpleView(S.tab);
+  app.innerHTML=head+`<main class="wrap">${body}</main>
+    <div class="footnote">PsyPressure benchmark incelemesi · sürüm ${esc(D.version)} · kararlar bu cihazda otomatik saklanır · veri uçtan uca şifreli</div>`
+    +(S.tab!=="panel"?dock():"")+overlays();
+  bind();
+}
+
+function dash(){
+  const pb=prog("base"),pl=prog("lever"),pd=prog("demand"),np=newProg();
+  const pct=np.total?Math.round(np.done/np.total*100):100;
+  return `<div class="dash">
+   <div class="hero"><h1>Hoş geldin${store.reviewer? ", "+esc(store.reviewer):""} 👋</h1>
+     <p>Bu turda <b>${np.total} yeni görev</b> incelemeni bekliyor. Daha önce verdiğin kararların tümü aşağıda — istediğini açıp değiştirebilirsin.</p>
+     <div class="pbar"><i style="width:${pct}%"></i></div>
+     <p style="margin-top:8px;font-size:13px;color:var(--faint)">Yeni öğeler: ${np.done}/${np.total} incelendi (%${pct})</p></div>
+   <div class="statrow">
+     ${[["Görevler",pb],["Kaldıraçlar",pl],["Talepler",pd]].map(([n,p])=>`
+       <div class="stat"><div class="k">${n}</div><div class="v">${p.rev}/${p.total}</div><div class="s">${p.ap} onaylı</div></div>`).join("")}
+   </div>
+   <button class="cta" id="startQ">${np.done<np.total?"İncelemeye başla →":"Yeni öğeler tamam ✓ — kararları gönder"}</button>
+   <button class="cta ghost" id="exportBtn">Kararları dışa aktar (.json)</button>
+   <p class="dashnote">Bittiğinde “dışa aktar”dan çıkan dosyayı ekibe göndermen yeterli — sisteme geri işlenir.<br>Kaldıraç ve talepler daha önce onaylandı; yalnız değişiklik istersen dokun.</p>
+  </div>`;}
+
+function baseView(){
+  const lst=curList();
+  const segs=`<div class="seg" role="tablist">
+    <button data-sub="queue" aria-selected="${S.sub==="queue"}">Yeni (${newProg().total})</button>
+    <button data-sub="done" aria-selected="${S.sub==="done"}">Kararlarım</button>
+    <button data-sub="all" aria-selected="${S.sub==="all"}">Tümü (${D.bases.length})</button></div>`;
+  if(S.sub!=="queue"&&!S.openId){
+    const rows=lst.map(x=>{const e=eff("base",x.id);const cls=!e?"none":(e.decision==="onayla"?"onayla":"other");
+      return `<button class="rowitem" data-open="${x.id}"><span class="st ${cls}"></span>
+        <span class="tx"><span class="t1">${esc(x.neutral_tr.slice(0,70))}</span>
+        <span class="t2">${esc(x.familyLabel)} · ${e?esc((DEC_META[e.decision]?.l)||e.decision)+(e.src==="prior"?" (önceki)":""):"incelenmedi"}</span></span>
+        <span class="idm">${esc(x.id)}</span></button>`;}).join("");
+    return segs+`<input class="search" id="srch" placeholder="Ara… (metin, aile, id)" value="${esc(S.q)}"><div class="list">${rows||'<div class="card"><div style="padding:30px;text-align:center;color:var(--muted)">Sonuç yok.</div></div>'}</div>`;
+  }
+  if(S.sub!=="queue"&&S.openId){
+    const i=lst.findIndex(x=>x.id===S.openId);
+    if(i<0){S.openId=null;return baseView();}
+    S.idx.base=i;
+    return segs+`<button class="linkbtn" id="backList" style="padding:0 0 10px">← Listeye dön</button>`+baseCard(lst[i]);
+  }
+  if(!lst.length)return segs+`<div class="card"><div style="padding:40px 20px;text-align:center;color:var(--muted)">✅ İncelenecek yeni görev kalmadı.<br><br><button class="cta" id="exportBtn2" style="max-width:280px">Kararları gönder</button></div></div>`;
+  if(S.idx.base>=lst.length)S.idx.base=lst.length-1;
+  return segs+baseCard(lst[S.idx.base]);
+}
+
+function baseCard(it){
+  const e=eff("base",it.id);
+  const warn=it.warnings&&it.warnings.length?`<div class="warnbox"><b>Otomatik uyarı:</b> ${esc(it.warnings.join(" · "))}</div>`:"";
+  const hint=it.hint?`<div class="hint ${it.hint.level}"><span>${it.hint.level==="sinir"?"⚠️":"💡"}</span><div>${esc(it.hint.text)}<span class="tag">Ön-değerlendirme (Claude) — karar senin</span></div></div>`:"";
+  const prior=(it.prior)?`<div class="prior">Önceki kararın: <b>${esc((DEC_META[it.prior.decision]?.l)||it.prior.decision)}</b>${it.prior.note?" — "+esc(it.prior.note):""} <span style="color:var(--faint)">(${esc(it.prior.at||"")})</span>. Aşağıdan değiştirebilirsin.</div>`:"";
+  const types=D.types, lv=[1,2,3];
+  return `<div class="card">
+    <div class="chead"><span class="chip fam">${esc(it.familyLabel)}</span><span class="chip dom">alan: ${esc(it.domain)}</span>
+      ${it.isNew?'<span class="chip new">YENİ</span>':""}<span class="chip id">${esc(it.id)}</span></div>
+    <div class="scenario"><p class="slabel">Senaryo — modele verilen nötr istem</p>
+      <p class="stext">${esc(it.neutral_tr)}</p>
+      <p class="en hidden" id="en">${esc(it.neutral_en)}</p>
+      <button class="linkbtn" id="enT">İngilizcesini göster</button></div>
+    <div class="aids">
+      <div class="aid"><span class="k">Ölçülen davranış</span><span class="v">${esc(it.btLabel)} · <span style="color:var(--muted)">${esc(it.fmLabel)} · belirsizlik: ${esc(it.unc)}</span></span></div>
+      <div class="aid ok"><span class="k">Beklenen doğru davranış</span><span class="v">${esc(it.ground_truth)}</span></div>
+      <div class="aid bad"><span class="k">Yanlış eylem</span><span class="v">${esc(it.wrong_action)}</span></div>
+      <div class="aid"><span class="k">Doğru cevabın taslağı</span><span class="v">${esc(it.correct_sketch)}</span></div>
+    </div>
+    ${warn}
+    <details class="ex"><summary><span class="caret">▸</span> Baskılı hâlini gör (tür &amp; yoğunluk seç)</summary>
+      <div class="exbody">
+        <div class="compctl">
+          <select id="cType">${types.map(t=>`<option value="${t}">${t}</option>`).join("")}</select>
+          <select id="cLvl">${lv.map(l=>`<option value="${l}" ${l===3?"selected":""}>yoğunluk ${l}</option>`).join("")}</select>
+        </div>
+        <div id="cOut" style="font-size:14px"></div>
+      </div></details>
+    ${hint}${prior}<div class="pad-b"></div>
+  </div>`;
+}
+
+function simpleView(ut){
+  const lst=listOf(ut);
+  if(S.idx[ut]>=lst.length)S.idx[ut]=lst.length-1;
+  const it=lst[S.idx[ut]];
+  const e=eff(ut,it.id);
+  const prior=it.prior?`<div class="prior">Önceki kararın: <b>${esc((DEC_META[it.prior.decision]?.l)||it.prior.decision)}</b>${it.prior.note?" — "+esc(it.prior.note):""} <span style="color:var(--faint)">(${esc(it.prior.at||"")})</span></div>`:"";
+  let bodyRows="";
+  if(ut==="lever"){
+    bodyRows=`
+      <div class="aid"><span class="k">Psikolojik yapı — ${esc(it.type)}</span><span class="v">${esc(it.construct)}</span></div>
+      <div class="aid"><span class="k">${it.isControl?"Kontrol kolu":"Yoğunluk "+it.intensity}</span><span class="v">${esc(it.intensLabel)}</span></div>
+      <div class="aid"><span class="k">Kaldıraç metni (TR)</span><span class="v" style="font-family:var(--serif);font-size:16px">${esc(it.text.tr)}</span></div>
+      <div class="aid"><span class="k">Lever text (EN)</span><span class="v" style="color:var(--muted)">${esc(it.text.en)}</span></div>
+      <div class="aid"><span class="k">Paradigma</span><span class="v" style="color:var(--muted);font-size:13px">${esc(it.paradigm)}</span></div>`;
+  }else{
+    bodyRows=`
+      <div class="aid"><span class="k">Davranış hedefi</span><span class="v">${esc(it.btLabel)}</span></div>
+      <div class="aid"><span class="k">Ne yaptırmaya çalışır</span><span class="v">${esc(it.meaning)}</span></div>
+      <div class="aid"><span class="k">Talep metni (TR)</span><span class="v" style="font-family:var(--serif);font-size:16px">${esc(it.text.tr)}</span></div>
+      <div class="aid"><span class="k">Demand text (EN)</span><span class="v" style="color:var(--muted)">${esc(it.text.en)}</span></div>`;
+  }
+  return `<div class="seg"><div style="flex:1;text-align:center;font-size:13px;color:var(--muted);padding:7px">Bu bileşenler daha önce onaylandı — yalnız değişiklik gerekiyorsa dokun.</div></div>
+  <div class="card">
+    <div class="chead"><span class="chip fam">${UT[ut]}</span><span class="chip id">${esc(it.id)}</span></div>
+    <div class="aids" style="margin-top:4px">${bodyRows}</div>
+    ${prior}<div class="pad-b"></div>
+  </div>`;
+}
+
+/* ---------- dock ---------- */
+function dock(){
+  if(S.tab==="base"&&S.sub!=="queue"&&!S.openId)return "";   // liste modunda karar cubugu yok
+  const lst=curList(); if(!lst.length)return "";
+  const it=lst[Math.min(S.idx[S.tab],lst.length-1)]; if(!it)return "";
+  const ut=S.tab, e=store.decisions[ut+"|"+it.id]||null;
+  const opts=D.decisionOptions[ut]||[];
+  const secondary=opts.filter(o=>!PRIMARY.includes(o));
+  const showNote=e&&e.decision==="duzeltilmeli";
+  return `<div class="dock"><div class="dockin">
+    <textarea class="note ${showNote?"show":""}" id="note" placeholder="Önerdiğin düzeltmeyi ya da kısa gerekçeni yaz…">${esc(e?.note||"")}</textarea>
+    <div class="acts">${PRIMARY.map(k=>`<button class="btn ${DEC_META[k].c}" data-dec="${k}" aria-pressed="${e?.decision===k}"><span>${DEC_META[k].e}</span>${DEC_META[k].l}</button>`).join("")}</div>
+    <div class="morewrap ${S.more?"show":""}"><div class="morebar">
+      ${secondary.map(k=>`<button class="more" data-dec="${k}" aria-pressed="${e?.decision===k}">${DEC_META[k].e} ${DEC_META[k].l}</button>`).join("")}
+      ${e?`<button class="more" id="clearDec">↺ Kararı temizle</button>`:""}
+    </div></div>
+    <div class="nav">
+      <button id="prev" ${S.idx[S.tab]===0?"disabled":""}>← Önceki</button>
+      <span class="count">${Math.min(S.idx[S.tab],lst.length-1)+1} / ${lst.length}</span>
+      <button id="next" ${S.idx[S.tab]>=lst.length-1?"disabled":""}>Sonraki →</button>
+    </div>
+    <div class="dockfoot"><button class="linkbtn" id="moreT">${S.more?"Diğer seçenekleri gizle":"Diğer seçenekler"}</button>
+      &nbsp;·&nbsp;<button class="linkbtn" id="finishL">Kararları gönder</button></div>
+  </div></div>`;
+}
+
+/* ---------- overlays ---------- */
+function overlays(){return `
+ <div class="ovl" id="introOvl"><div class="sheet">
+  <h2>Nasıl çalışır?</h2>
+  <p class="sub">Her kartta bir senaryo ve “beklenen doğru davranış” var. Üç soruya bakıyorsun:</p>
+  <ol class="steps">
+    <li><span class="n">1</span><span class="t"><b>Türkçesi doğal mı?</b> Çeviri kokmuyor, akıcı mı?</span></li>
+    <li><span class="n">2</span><span class="t"><b>Tek bir psikolojik durumu net taşıyor mu?</b></span></li>
+    <li><span class="n">3</span><span class="t"><b>Beklenen davranış senaryoya uyuyor mu?</b></span></li>
+  </ol>
+  <p class="sub">✅ üçü de uygunsa · ✏️ küçük dil düzeltmesi yeter (notu yaz) · ❌ senaryo kusurlu. Kararların otomatik kaydolur; eskileri de görüp değiştirebilirsin.</p>
+  <button class="cta" id="introOk">Başla</button></div></div>
+ <div class="ovl" id="finOvl"><div class="sheet" style="text-align:center">
+  <div style="font-size:42px;margin-bottom:6px">🎉</div><h2>Kararların hazır</h2>
+  <p class="sub" id="finSub"></p>
+  <button class="cta block" id="dl">Dosyayı indir (.json)</button>
+  <button class="cta ghost block" id="cp">Panoya kopyala</button>
+  <div class="exportbox" id="prev2"></div>
+  <button class="cta ghost block" id="backR">İncelemeye dön</button></div></div>`;}
+
+function buildExport(){
+  const decs=Object.entries(store.decisions).map(([k,v])=>{const [ut,id]=k.split("|");return{unit_type:ut,id,decision:v.decision,note:v.note||""};});
+  return {tool:"psypressure-review",version:D.version,reviewer:store.reviewer||"Ecem",
+    exported_at:new Date().toISOString(),count:decs.length,decisions:decs};}
+function showFinish(){
+  const np=newProg();
+  $("#finSub").textContent=`${store.reviewer||"Ecem"} · ${Object.keys(store.decisions).length} karar (${np.done}/${np.total} yeni görev). Dosyayı ekibe gönder — sisteme geri işlenecek.`;
+  $("#prev2").textContent=JSON.stringify(buildExport(),null,1).slice(0,1000);
+  $("#finOvl").classList.add("show");}
+function showIntro(){$("#introOvl").classList.add("show");}
+
+/* ---------- events ---------- */
+function bind(){
+  document.querySelectorAll("[data-tab]").forEach(b=>b.onclick=()=>{S.tab=b.dataset.tab;S.more=false;S.openId=null;render();});
+  document.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>{S.sub=b.dataset.sub;S.idx.base=0;S.openId=null;render();});
+  document.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>{S.openId=b.dataset.open;render();});
+  const bl=$("#backList");if(bl)bl.onclick=()=>{S.openId=null;render();};
+  const rv=$("#rev");if(rv)rv.oninput=e=>{store.reviewer=e.target.value||"Ecem";save();};
+  const th=$("#theme");if(th)th.onclick=()=>{const r=document.documentElement;const cur=r.getAttribute("data-theme");
+    const dark=cur?cur==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.setAttribute("data-theme",dark?"light":"dark");};
+  const sq=$("#startQ");if(sq)sq.onclick=()=>{const np=newProg();if(np.done<np.total){S.tab="base";S.sub="queue";render();}else showFinish();};
+  ["exportBtn","exportBtn2"].forEach(i=>{const b=$("#"+i);if(b)b.onclick=showFinish;});
+  const srch=$("#srch");if(srch){srch.oninput=e=>{S.q=e.target.value;render();const s2=$("#srch");if(s2){s2.focus();s2.setSelectionRange(s2.value.length,s2.value.length);}};}
+  const enT=$("#enT");if(enT)enT.onclick=()=>{const en=$("#en");en.classList.toggle("hidden");enT.textContent=en.classList.contains("hidden")?"İngilizcesini göster":"İngilizceyi gizle";};
+  // kompozisyon onizleme
+  const cT=$("#cType"),cL=$("#cLvl");
+  if(cT&&cL){const upd=()=>{const lst=curList();const it=lst[Math.min(S.idx.base,lst.length-1)];if(!it)return;
+      const t=cT.value,l=cL.value;const dm=D.demands_texts[it.bt],lv=D.levers_texts[t][l];
+      $("#cOut").innerHTML=`<div style="margin-bottom:8px"><b style="font-size:11px;color:var(--faint);letter-spacing:.05em">TR</b><br>${esc(it.neutral_tr)} <mark style="background:var(--warn-weak);color:inherit;border-radius:4px;padding:0 3px">${esc(dm.tr)} ${esc(lv.tr)}</mark></div>
+      <div style="color:var(--muted)"><b style="font-size:11px;color:var(--faint);letter-spacing:.05em">EN</b><br>${esc(it.neutral_en)} <mark style="background:var(--warn-weak);color:inherit;border-radius:4px;padding:0 3px">${esc(dm.en)} ${esc(lv.en)}</mark></div>`;};
+    cT.onchange=upd;cL.onchange=upd;upd();}
+  // dock
+  document.querySelectorAll("[data-dec]").forEach(b=>b.onclick=()=>{const lst=curList();const it=lst[Math.min(S.idx[S.tab],lst.length-1)];decide(S.tab,it.id,b.dataset.dec);});
+  const note=$("#note");if(note)note.oninput=e=>{const lst=curList();const it=lst[Math.min(S.idx[S.tab],lst.length-1)];const k=S.tab+"|"+it.id;
+    if(!store.decisions[k])store.decisions[k]={decision:"duzeltilmeli",note:""};store.decisions[k].note=e.target.value;save();};
+  const cd=$("#clearDec");if(cd)cd.onclick=()=>{const lst=curList();const it=lst[Math.min(S.idx[S.tab],lst.length-1)];clearDecision(S.tab,it.id);};
+  const step=d=>{const lst=curList();
+    if(S.tab==="base"&&S.openId){const i=lst.findIndex(x=>x.id===S.openId);const j=i+d;
+      if(j>=0&&j<lst.length){S.openId=lst[j].id;render();}return;}
+    S.idx[S.tab]+=d;render();};
+  const pv=$("#prev");if(pv)pv.onclick=()=>step(-1);
+  const nx=$("#next");if(nx)nx.onclick=()=>step(1);
+  const mt=$("#moreT");if(mt)mt.onclick=()=>{S.more=!S.more;render();};
+  const fl=$("#finishL");if(fl)fl.onclick=showFinish;
+  const io=$("#introOk");if(io)io.onclick=()=>{store.introSeen=true;save();$("#introOvl").classList.remove("show");};
+  const dl=$("#dl");if(dl)dl.onclick=()=>{const blob=new Blob([JSON.stringify(buildExport(),null,2)],{type:"application/json"});
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`psy_review_${(store.reviewer||"ecem").toLowerCase()}_${D.version}.json`;a.click();toast("İndirildi");};
+  const cp=$("#cp");if(cp)cp.onclick=async()=>{try{await navigator.clipboard.writeText(JSON.stringify(buildExport(),null,2));toast("Kopyalandı");}catch(e){toast("Kopyalanamadı — indir düğmesini kullan");}};
+  const br=$("#backR");if(br)br.onclick=()=>$("#finOvl").classList.remove("show");
+}
+boot();
+</script>
+</body>
+</html>
